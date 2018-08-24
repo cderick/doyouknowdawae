@@ -26,6 +26,14 @@
     .hide{
         display: none;
     }
+    @media (min-width: 580px) and (max-width: 999px) {
+        .ibm-center-medium{
+            text-align: center;
+        }
+        .ibm-padding-medium-top-0 {
+            padding-top: 0px !important;
+        }
+    }
     </style>
     <script type="text/javascript">
     $ = jQuery;
@@ -76,7 +84,7 @@
             </div>
             <div class="ibm-col-12-6">
                 <div class="ibm-padding-content ibm-padding-top-r3 ibm-right">
-                    <p class="ibm-button-link ibm-padding-top-3">
+                    <p class="ibm-button-link ibm-padding-top-3 .ibm-padding-medium-top-0">
                         <a href="../insert" class="ibm-btn-sec ibm-btn-blue-30">My turn to insert now</a>
                     </p>
                 </div>
@@ -84,13 +92,13 @@
         </div>
     </div>
     <div class="ibm-fluid ibm-fullwidth ibm-seamless" id="custombg">
-        <div class="ibm-col-12-9 ibm-center-block">
-            <div class="ibm-col-12-6 ibm-background-black-core ibm-alternate-background">
+        <div class="ibm-col-12-9 ibm-col-medium-12-12 ibm-center-block">
+            <div class="ibm-col-12-6 ibm-col-medium-12-12 ibm-background-black-core ibm-alternate-background">
                 <div class="ibm-padding-content ibm-padding-top-r3 ibm-padding-bottom-r3">
                     <p id="dated" class="ibm-h4 ibm-bold">Last song updated at:</p>
                 </div>
             </div>
-            <div class="ibm-col-12-6 ibm-background-white-core">
+            <div class="ibm-col-12-6 ibm-col-medium-12-12 ibm-background-white-core">
                 <div class="ibm-padding-content ibm-padding-top-r3 ibm-padding-bottom-r3 ibm-center">
                     <p class="ibm-button-link">
                         <a href="javascript:void(0);" id="play-video" class="ibm-btn-sec ibm-btn-blue-50"><span class="ibm-h3">Play it</span></a>

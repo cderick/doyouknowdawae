@@ -29,6 +29,14 @@
     .invcustombg {
         background: linear-gradient(90deg, #000 50%, #fff 50%);
     }
+    @media (min-width: 580px) and (max-width: 999px) {
+        .ibm-center-medium{
+            text-align: center;
+        }
+        .ibm-padding-medium-top-0 {
+            padding-top: 0px !important;
+        }
+    }
     </style>
     <script type="text/javascript">
     $ = jQuery;
@@ -66,6 +74,8 @@
                     ytid: match[2],
                     hora: resultado
                 }
+                console.log(youtube.ytid);
+                console.log(youtube.hora);
                 youtube = JSON.stringify(youtube);
                 api.setRepo('cderick', 'musicgame');
                 api.setBranch('master')
@@ -77,6 +87,7 @@
                 );
                 $('#sMessage').html('Upload Sucessfull!');
                 $('#myform').trigger('reset');
+                console.log('Looks everything fine');
                 $('#sendMusic').text('Send Another');
                 setTimeout(function () {
                     location.reload();
@@ -258,13 +269,13 @@
 <body>
     <div class="ibm-fluid ibm-fullwidth ibm-seamless">
         <div class="ibm-col-12-12 ibm-background-purple-60 ibm-alternate-background" id="background">
-            <div class="ibm-col-12-6">
+            <div class="ibm-col-12-6 ibm-col-medium-12-12">
                 <div class="ibm-padding-content ibm-padding-top-r3 ibm-padding-bottom-r3 ibm-center">
                     <h1 class="ibm-h1 ibm-large">Insert the Youtube Link:</h1>
                 </div>
             </div>
-            <div class="ibm-col-12-6 ibm-padding-top-r3">
-                <div class="ibm-padding-content ibm-padding-top-r3 ibm-right">
+            <div class="ibm-col-12-6 ibm-col-medium-12-12 ibm-padding-top-r3 ibm-padding-medium-top-0">
+                <div class="ibm-padding-content ibm-padding-top-r3 ibm-padding-medium-top-0 ibm-center-medium ibm-right">
                     <p class="ibm-button-link">
                         <a href="../guess" class="ibm-btn-sec ibm-btn-blue-30">I'll try to guess now</a>
                     </p>
@@ -273,9 +284,9 @@
         </div>
     </div>
     <div class="ibm-fluid ibm-fullwidth ibm-seamless custombg">
-        <div class="ibm-col-12-9 ibm-center-block">
-            <div class="ibm-col-12-6 ibm-background-white-core">
-                <div class="ibm-padding-content ibm-padding-top-r3 ibm-padding-bottom-r3">
+        <div class="ibm-col-12-9 ibm-col-medium-12-12 ibm-center-block">
+            <div class="ibm-col-12-6 ibm-col-medium-12-12 ibm-background-white-core">
+                <div class="ibm-padding-content ibm-padding-top-r3 ibm-padding-bottom-r3 ibm-center-medium">
                     <form id="myform" class="ibm-row-form">
                         <p>
                             <label for="youtubeUrl">Text field:<span class="ibm-required">*</span></label>
@@ -286,7 +297,7 @@
                     </form>
                 </div>
             </div>
-            <div class="ibm-col-12-6 ibm-background-black-core">
+            <div class="ibm-col-12-6 ibm-col-medium-12-12 ibm-background-black-core">
                 <div class="ibm-padding-content ibm-padding-top-r3 ibm-padding-bottom-r3 ibm-center">
                     <p class="ibm-button-link ibm-padding-top-1">
                         <a href="javascript:void(0);" id="sendMusic" class="ibm-btn-sec ibm-btn-blue-30"><span class="ibm-h4">Send music</span></a>
