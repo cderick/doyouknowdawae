@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+
+    <title>Insert Know Da Wae!</title>
+    <meta charset="utf-8" />
+    <link rel="icon" href="../dae.ico" />
+    <link rel="canonical" href="https://cderick.github.io/doyouknowdawae/insert/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="security" content="public" />
+    <meta name="robots" content="index, follow" /> 
+    <link href="https://1.www.s81c.com/common/v18/css/www.css" rel="stylesheet" />
+    <link href="https://1.www.s81c.com/common/v18/css/grid-fluid.css" rel="stylesheet" />
+    <link href="https://1.www.s81c.com/common/v18/css/forms.css" rel="stylesheet">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+    <script src="https://unpkg.com/github-api/dist/GitHub.bundle.js" charset="UTF-8"></script>
+    <style type="text/css">
+    #background {
+        background-image: url('../question-mark.jpg');
+        background-size: cover;
+        background-position: center center;
+    }
+    .custombg {
+        background: linear-gradient(90deg, #fff 50%, #000 50%);
+    }
+    #controler{
+        display: block;
+    }
+    .invcustombg {
+        background: linear-gradient(90deg, #000 50%, #fff 50%);
+    }
+    </style>
+    <script type="text/javascript">
+    $ = jQuery;
+    $.ajaxSetup({cache: false});
+    var carai = 'YzFiZjdmMjkzNzhlMWM2YzJiZDhhMzI2NjQxMTU1MzBiMmRjZTVhYg==';
+    var agoravai = atob(carai);
+    function retrieve() {
+        api = new GithubAPI({token: agoravai});
+    }
+    $(document).ready(function() {
+        retrieve();
+        $('#myform').trigger('reset');
+        $('#sendMusic').click(function(ev) {
+            ev.preventDefault();
+            var data = new Date();
+            // Guarda cada pedaço em uma variável
+            var dia     = data.getDate();           // 1-31
+            var mes     = data.getMonth();          // 0-11 (zero=janeiro)
+            var ano4    = data.getFullYear();       // 4 dígitos
+            var hora    = data.getHours();          // 0-23
+            var min     = data.getMinutes();        // 0-59
+            var seg     = data.getSeconds();        // 0-59
+            // Formata a data e a hora (note o mês + 1)
+            var str_data = dia + '-' + (mes+1) + '-' + ano4;
+            var str_hora = hora + ':' + min + ':' + seg;
+            // Mostra o resultado
+            var resultado = str_data + ' and ' + str_hora;
+            var url = $('#youtubeUrl').val();
+            var patt = /(v=|be\/)([\w\W]{11})/g;
+            var match = patt.exec(url);
+            if (match == null) {
+                alert('Invalid URL, Be sure is Youtube URL');
+            } else {
+                var youtube = {
+                    ytid: match[2],
+                    hora: resultado
+                }
+                youtube = JSON.stringify(youtube);
+                api.setRepo('cderick', 'musicgame');
+                api.setBranch('master')
+                    .then( () => api.pushFiles(
+                        'Saving the answer',
+                        [
+                            {content: youtube, path: 'youtube.json'},
+                    ])
+                );
+                $('#sMessage').html('Upload Sucessfull!');
+                $('#myform').trigger('reset');
+                $('#sendMusic').text('Send Another');
+                setTimeout(function () {
+                    location.reload();
+                }, 2000);
+            }
+        });
+    });
+    function GithubAPI(auth) {
+        let repo;
+        let filesToCommit = [];
+        let currentBranch = {};
+        let newCommit = {};
+        
+        //the underlying library for making requests
+        let gh = new GitHub(auth);
+
+        /**
+         * Sets the current repository to make push to
+         * @public
+         * @param {string} userName Name of the user who owns the repository
+         * @param {string} repoName Name of the repository
+         * @return void
+         */
+        this.setRepo = function(userName, repoName) {
+            repo = gh.getRepo(userName, repoName);
+        }
+
+        /**
+         * Sets the current branch to make push to. If the branch doesn't exist yet,
+         * it will be created first
+         * @public
+         * @param {string} branchName The name of the branch
+         * @return {Promise}
+         */
+        this.setBranch = function(branchName) {
+            if (!repo) {
+                throw 'Repository is not initialized';
+            }
+
+            return repo.listBranches().then((branches) => {
+
+                let branchExists = branches.data.find( branch => branch.name === branchName );
+
+                if (!branchExists) {
+                    return repo.createBranch('master', branchName)
+                        .then(() => {
+                            currentBranch.name = branchName;
+                        });
+                } else {
+                    currentBranch.name = branchName;
+                }
+            });
+        }
+
+        /**
+         * Makes the push to the currently set branch
+         * @public
+         * @param  {string}   message Message of the commit
+         * @param  {object[]} files   Array of objects (with keys 'content' and 'path'),
+         *                            containing data to push
+         * @return {Promise}
+         */
+        this.pushFiles = function(message, files) {
+            if (!repo) {
+                throw 'Repository is not initialized';
+            }
+            if (!currentBranch.hasOwnProperty('name')) {
+                throw 'Branch is not set';
+            }
+
+            return getCurrentCommitSHA()
+                .then(getCurrentTreeSHA)
+                .then( () => createFiles(files) )
+                .then(createTree)
+                .then( () => createCommit(message) )
+                .then(updateHead)
+                .catch((e) => {
+                    console.error(e);
+                });
+        }
+
+        /**
+         * Sets the current commit's SHA
+         * @private
+         * @return {Promise}
+         */
+        function getCurrentCommitSHA() {
+            return repo.getRef('heads/' + currentBranch.name)
+                .then((ref) => {
+                    currentBranch.commitSHA = ref.data.object.sha;
+                });
+        }
+
+        /**
+         * Sets the current commit tree's SHA
+         * @private
+         * @return {Promise}
+         */
+        function getCurrentTreeSHA() {
+            return repo.getCommit(currentBranch.commitSHA)
+                .then((commit) => {
+                    currentBranch.treeSHA = commit.data.tree.sha;
+                });
+        }
+
+        /**
+         * Creates blobs for all passed files
+         * @private
+         * @param  {object[]} filesInfo Array of objects (with keys 'content' and 'path'),
+         *                              containing data to push
+         * @return {Promise}
+         */
+        function createFiles(filesInfo) {
+            let promises = [];
+            let length = filesInfo.length;
+
+            for (let i = 0; i < length; i++) {
+                promises.push(createFile(filesInfo[i]));
+            }
+
+            return Promise.all(promises);
+        }
+
+        /**
+         * Creates a blob for a single file
+         * @private
+         * @param  {object} fileInfo Array of objects (with keys 'content' and 'path'),
+         *                           containing data to push
+         * @return {Promise}
+         */
+        function createFile(fileInfo) {
+            return repo.createBlob(fileInfo.content)
+                .then((blob) => {
+                    filesToCommit.push({
+                        sha: blob.data.sha,
+                        path: fileInfo.path,
+                        mode: '100644',
+                        type: 'blob'
+                    });
+                });
+        }
+
+        /**
+         * Creates a new tree
+         * @private
+         * @return {Promise}
+         */
+        function createTree() {
+            return repo.createTree(filesToCommit, currentBranch.treeSHA)
+                .then((tree) => {
+                    newCommit.treeSHA = tree.data.sha;
+                });
+        }
+
+        /**
+         * Creates a new commit
+         * @private
+         * @param  {string} message A message for the commit
+         * @return {Promise}
+         */
+        function createCommit(message) {
+            return repo.commit(currentBranch.commitSHA, newCommit.treeSHA, message)
+                .then((commit) => {
+                    newCommit.sha = commit.data.sha;
+                });
+        }
+
+        /**
+         * Updates the pointer of the current branch to point the newly created commit
+         * @private
+         * @return {Promise}
+         */
+        function updateHead() {
+            return repo.updateHead('heads/' + currentBranch.name, newCommit.sha);
+        }
+    };
+    </script>
+</head>
+<body>
+    <div class="ibm-fluid ibm-fullwidth ibm-seamless">
+        <div class="ibm-col-12-12 ibm-background-purple-60 ibm-alternate-background" id="background">
+            <div class="ibm-col-12-6">
+                <div class="ibm-padding-content ibm-padding-top-r3 ibm-padding-bottom-r3 ibm-center">
+                    <h1 class="ibm-h1 ibm-large">Insert the Youtube Link:</h1>
+                </div>
+            </div>
+            <div class="ibm-col-12-6 ibm-padding-top-r3">
+                <div class="ibm-padding-content ibm-padding-top-r3 ibm-right">
+                    <p class="ibm-button-link">
+                        <a href="../guess" class="ibm-btn-sec ibm-btn-blue-30">I'll try to guess now</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ibm-fluid ibm-fullwidth ibm-seamless custombg">
+        <div class="ibm-col-12-9 ibm-center-block">
+            <div class="ibm-col-12-6 ibm-background-white-core">
+                <div class="ibm-padding-content ibm-padding-top-r3 ibm-padding-bottom-r3">
+                    <form id="myform" class="ibm-row-form">
+                        <p>
+                            <label for="youtubeUrl">Text field:<span class="ibm-required">*</span></label>
+                            <span>
+                                <input type="text" value="" size="40" id="youtubeUrl" name="youtubeUrl">
+                            </span>
+                        </p>
+                    </form>
+                </div>
+            </div>
+            <div class="ibm-col-12-6 ibm-background-black-core">
+                <div class="ibm-padding-content ibm-padding-top-r3 ibm-padding-bottom-r3 ibm-center">
+                    <p class="ibm-button-link ibm-padding-top-1">
+                        <a href="javascript:void(0);" id="sendMusic" class="ibm-btn-sec ibm-btn-blue-30"><span class="ibm-h4">Send music</span></a>
+                    </p>
+                    <p class="ibm-h4 ibm-textcolor-white-core" id="sMessage"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

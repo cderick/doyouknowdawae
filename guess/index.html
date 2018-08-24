@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+
+    <title>Guess Know Da Wae?</title>
+    <meta charset="utf-8" />
+    <link rel="icon" href="../dae.ico" />
+    <link rel="canonical" href="https://cderick.github.io/doyouknowdawae/guess/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="security" content="public" />
+    <meta name="robots" content="index, follow" /> 
+    <link href="https://1.www.s81c.com/common/v18/css/www.css" rel="stylesheet" />
+    <link href="https://1.www.s81c.com/common/v18/css/grid-fluid.css" rel="stylesheet" />
+    <link href="https://1.www.s81c.com/common/v18/css/forms.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+    <script src="https://unpkg.com/github-api/dist/GitHub.bundle.js" charset="UTF-8"></script>
+    <style type="text/css">
+    #background {
+        background-image: url('../question-mark.jpg');
+        background-size: cover;
+        background-position: center center;
+    }
+    #custombg {
+        background: linear-gradient(90deg, #000 50%, #fff 50%);
+    }
+    .hide{
+        display: none;
+    }
+    </style>
+    <script type="text/javascript">
+    $ = jQuery;
+    $.ajaxSetup({cache: false});
+    var carai = 'YzFiZjdmMjkzNzhlMWM2YzJiZDhhMzI2NjQxMTU1MzBiMmRjZTVhYg==';
+    var agoravai = atob(carai);
+    var conversao;
+    function checkInit(){
+        $.getJSON('https://api.github.com/repos/cderick/musicgame/contents/youtube.json?access_token='+agoravai).done(function(json) {
+            if(json != null){
+                getContent = json;
+                var finalContent = getContent.content;
+                conversao = atob(finalContent);
+                if (conversao.slice(0,1) == '"') {
+                    conversao = JSON.parse(conversao.slice(1,-1));
+                } else {
+                    conversao = JSON.parse(conversao);
+                }
+                var store = conversao;
+                conversao = conversao.ytid;
+                store = store.hora;
+                $("#video")[0].src = "https://www.youtube.com/embed/" + conversao;
+                conversao = conversao.hora;
+                $("#dated").append('<span class="ibm-textcolor-blue-30">&nbsp;&nbsp;'+store+'</span>');
+            } else {
+                return false;
+            }
+        });
+    }
+    $(window).on('load', function(){
+        checkInit();
+    });
+    $(document).ready(function() {
+      $('#play-video').on('click', function(ev) {
+        ev.preventDefault();
+        $("#video")[0].src += "?autoplay=1";
+      });
+    });
+    </script>
+</head>
+<body>
+    <div class="ibm-fluid ibm-fullwidth ibm-seamless">
+        <div class="ibm-col-12-12 ibm-background-purple-60 ibm-alternate-background" id="background">
+            <div class="ibm-col-12-6">
+                <div class="ibm-padding-content ibm-padding-top-r2 ibm-padding-bottom-r2">
+                    <h1 class="ibm-h1 ibm-large ibm-padding-content ibm-padding-top-3 ibm-padding-bottom-3">Guess this:</h1>
+                </div>
+            </div>
+            <div class="ibm-col-12-6">
+                <div class="ibm-padding-content ibm-padding-top-r3 ibm-right">
+                    <p class="ibm-button-link ibm-padding-top-3">
+                        <a href="../insert" class="ibm-btn-sec ibm-btn-blue-30">My turn to insert now</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ibm-fluid ibm-fullwidth ibm-seamless" id="custombg">
+        <div class="ibm-col-12-9 ibm-center-block">
+            <div class="ibm-col-12-6 ibm-background-black-core ibm-alternate-background">
+                <div class="ibm-padding-content ibm-padding-top-r3 ibm-padding-bottom-r3">
+                    <p id="dated" class="ibm-h4 ibm-bold">Last song updated at:</p>
+                </div>
+            </div>
+            <div class="ibm-col-12-6 ibm-background-white-core">
+                <div class="ibm-padding-content ibm-padding-top-r3 ibm-padding-bottom-r3 ibm-center">
+                    <p class="ibm-button-link">
+                        <a href="javascript:void(0);" id="play-video" class="ibm-btn-sec ibm-btn-blue-50"><span class="ibm-h3">Play it</span></a>
+                    </p>
+                </div>
+            </div>
+            <div class="hide">
+                <iframe id="video" width="420" height="315" src="javascript:void(0);"></iframe>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
